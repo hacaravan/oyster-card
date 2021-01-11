@@ -2,8 +2,8 @@ require 'oystercard'
 
 describe Oystercard do
 
-  it { is_expected.to respond_to :balance }
-  it { is_expected.to respond_to(:top_up).with(1).argument }
+  # it { is_expected.to respond_to :balance }
+  # it { is_expected.to respond_to(:top_up).with(1).argument }
 
   describe '#balance' do
     subject { Oystercard.new.balance }
@@ -17,9 +17,15 @@ describe Oystercard do
     context 'when trying to top up above the limit' do
       let(:limit) { Oystercard::LIMIT}
       it 'should raise an error' do
-        expect{ subject.top_up limit+ 1 }.to raise_error "You cannot top up above £#{limit}. You are at £#{subject.balance}"
+        expect{ subject.top_up limit + 1 }.to raise_error "You cannot top up above £#{limit}. You are at £#{subject.balance}"
       end
     end
   end
+
+  describe "#deduct" do
+  it "deducts the amount of the fare from the balance" do
+    expect{ subject.deduct 1 }.to change{ subject.balance }.by -1
+  end
+end
 
 end
