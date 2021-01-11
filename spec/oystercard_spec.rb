@@ -29,15 +29,16 @@ describe Oystercard do
   end
 
   describe '#in_journey?' do
-    subject { Oystercard.new.in_journey? }
-    it 'should return true or false' do
-      expect(subject).to be(true).or be false
-    end
-    context 'when a card is first created' do
-      it 'should return false' do
-        expect(subject).to be false
-      end
+    it "should initially not be in a journey" do
+      expect(subject).not_to be_in_journey
     end
   end
 
+  describe "#touch_in" do
+    it "can touch in" do
+        subject.touch_in
+        expect(subject).to be_in_journey
+    end
+  end
+  
 end
