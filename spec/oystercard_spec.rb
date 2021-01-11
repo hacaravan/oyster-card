@@ -23,9 +23,21 @@ describe Oystercard do
   end
 
   describe "#deduct" do
-  it "deducts the amount of the fare from the balance" do
-    expect{ subject.deduct 1 }.to change{ subject.balance }.by -1
+    it "deducts the amount of the fare from the balance" do
+      expect{ subject.deduct 1 }.to change{ subject.balance }.by -1
+    end
   end
-end
+
+  describe '#in_journey?' do
+    subject { Oystercard.new.in_journey? }
+    it 'should return true or false' do
+      expect(subject).to be(true).or be false
+    end
+    context 'when a card is first created' do
+      it 'should return false' do
+        expect(subject).to be false
+      end
+    end
+  end
 
 end
