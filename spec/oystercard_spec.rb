@@ -11,10 +11,9 @@ describe Oystercard do
   end
 
   describe '#top_up' do
-    let(:card) { Oystercard.new }
-    before { card.top_up(amount) }
+
     it 'adds the amount onto the existing balance' do
-      expect(card.balance).to eq amount + balance
+     expect{ subject.top_up 1 }.to change{ subject.balance }.by 1
     end
   end
 
