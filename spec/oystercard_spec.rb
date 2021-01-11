@@ -14,10 +14,10 @@ describe Oystercard do
     it 'adds the amount onto the existing balance' do
      expect{ subject.top_up 1 }.to change{ subject.balance }.by 1
     end
-    context 'when trying to top up above the limit' do
-      let(:limit) { Oystercard::LIMIT}
+    context 'when trying to top up above the max balance' do
+      let(:max_balance) { Oystercard::MAX_BALANCE}
       it 'should raise an error' do
-        expect{ subject.top_up limit + 1 }.to raise_error "You cannot top up above £#{limit}. You are at £#{subject.balance}"
+        expect{ subject.top_up max_balance + 1 }.to raise_error "You cannot top up above £#{max_balance}. You are at £#{subject.balance}"
       end
     end
   end
@@ -35,10 +35,30 @@ describe Oystercard do
   end
 
   describe "#touch_in" do
-    it "can touch in" do
-        subject.touch_in
-        expect(subject).to be_in_journey
+    context "when you have enough for a journey" do
+      it "can touch in" do
+          min_balance = Oystercard::MIN_BALANCE
+          subject.top_up(min_balance)
+          subject.touch_in
+          expect(subject).to be_in_journey
+      end
+    end
+    context "when you don't have enough for a journey" do
+      it 'should raise an error' do
+        min_balance = Oystercard::MIN_BALANCE
+        subject.top_up(min_balance - 0.01)
+        expect { subject.touch_in }.to raise_error "Insufficient funds to touch in. You need at least £#{min_balance} and you have £#{subject.balance}"
+      end
     end
   end
-  
+
+  describe '#touch_out' do
+    it 'can touch out' do
+      subject.top_up(Oystercard::MIN_BALANCE)
+      subject.touch_in
+      subject.touch_out
+      expect(subject).not_to be_in_journey
+    end
+  end
+
 end
