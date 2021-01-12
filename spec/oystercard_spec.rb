@@ -29,37 +29,49 @@ describe Oystercard do
   end
 
   describe "#touch_in" do
+    let(:station) { double("Peckham Rye") }
     context "when you have enough for a journey" do
+      min_balance = Oystercard::MIN_BALANCE
+      before do
+        subject.top_up(min_balance)
+        subject.touch_in(station)
+      end
       it "can touch in" do
-          min_balance = Oystercard::MIN_BALANCE
-          subject.top_up(min_balance)
-          subject.touch_in
-          expect(subject).to be_in_journey
+        expect(subject).to be_in_journey
+      end
+      it "remembers the entry station" do
+        expect(subject.entry_station).to eq station
       end
     end
     context "when you don't have enough for a journey" do
       it 'should raise an error' do
         min_balance = Oystercard::MIN_BALANCE
         subject.top_up(min_balance - 0.01)
-        expect { subject.touch_in }.to raise_error "Insufficient funds to touch in. You need at least £#{min_balance} and you have £#{subject.balance}"
+        expect { subject.touch_in(station) }.to raise_error "Insufficient funds to touch in. You need at least £#{min_balance} and you have £#{subject.balance}"
       end
     end
   end
 
   describe '#touch_out' do
-    context "when you have completed a journey you can touch out" do 
+    context "when you have completed a journey" do
       min_balance = Oystercard::MIN_BALANCE
+      let(:station) { double("Peckham Rye") }
+      before do
+        subject.top_up(min_balance)
+        subject.touch_in(station)
+      end
       it 'can touch out' do
-          subject.top_up(min_balance)
-          subject.touch_in
-          subject.touch_out
-          expect(subject).not_to be_in_journey
-        end
-
+        subject.touch_out
+        expect(subject).not_to be_in_journey
+      end
       it "charges you the fare for your journey" do
         expect { subject.touch_out }.to change{ subject.balance }.by -(min_balance)
-      end   
       end
+      it "Forgets entry station" do
+        subject.touch_out
+        expect(subject.entry_station).to be nil
+      end
+    end
   end
 
 end
