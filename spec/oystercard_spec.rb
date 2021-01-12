@@ -60,33 +60,30 @@ describe Oystercard do
   end
 
   describe '#touch_out' do
+    min_balance = Oystercard::MIN_BALANCE
+    let(:station) { double("Peckham Rye") }
+    let(:exit_station) { double("Nunhead") }
+    before do
+      subject.top_up(min_balance)
+      subject.touch_in(station)
+    end
     context "when you have completed a journey" do
-      min_balance = Oystercard::MIN_BALANCE
-      let(:station) { double("Peckham Rye") }
-      let(:exit_station) { double("Nunhead") }
-      before do
-        subject.top_up(min_balance)
-        subject.touch_in(station)
-      end
+      before { subject.touch_out(exit_station) }
       it 'can touch out' do
-        subject.touch_out(exit_station)
         expect(subject).not_to be_in_journey
       end
-      it "charges you the fare for your journey" do
-        expect { subject.touch_out(exit_station) }.to change{ subject.balance }.by -(min_balance)
-      end
       it "Remembers the exit station" do
-        subject.touch_out(exit_station)
         expect(subject.exit_station).to eq exit_station
       end
       it "Forgets entry station" do
-        subject.touch_out(exit_station)
         expect(subject.entry_station).to be nil
       end
       it "Displays entry/exit stations when touched out" do
-        subject.touch_out(exit_station)
-        expect(subject.journey_list).to eq(entry_station: station, exit_station: exit_station)
+        expect(subject.journey).to eq(entry_station: station, exit_station: exit_station)
       end
+    end
+    it "charges you the fare for your journey" do
+      expect { subject.touch_out(exit_station) }.to change{ subject.balance }.by -(min_balance)
     end
   end
 
