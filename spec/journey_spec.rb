@@ -3,9 +3,15 @@ require 'journey'
 describe Journey do
 
   context 'when first created' do
-    it 'should not have started a journey' do
-      expect(subject).not_to be_started
+
+    it 'should not have an entry station' do
+      expect(subject.entry_station).to be_nil
     end
+
+    it 'should not have an exit station' do
+      expect(subject.exit_station).to be_nil
+    end
+
   end
 
   describe '#start_journey' do
@@ -14,17 +20,16 @@ describe Journey do
     it 'should add an entry station' do
       expect(subject.entry_station).to eq entry_station
     end
-    it 'should have started a journey' do
-      expect(subject).to be_started
-    end
   end
-  #
-  # describe '#end_journey' do
-  #   it 'should add an exit station' do
-  #
-  #   end
-  # end
-  #
+  
+  describe '#end_journey' do
+    let(:exit_station) { Station.new("Nunhead", 3) }
+    before { subject.end_journey(exit_station) }
+      it 'should add an exit station' do
+        expect(subject.exit_station).to eq exit_station    
+      end
+  end
+  
   # describe '#calculate_fare' do
   #   context 'when there is an exit and entry station' do
   #     it 'should give the charge for travelling between the two zones' do
